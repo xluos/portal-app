@@ -1,9 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App from './App.jsx';
 import * as serviceWorker from './serviceWorker';
+import Loadable from "react-loadable"
 
+window.app = {
+  modules: {
+    react: React,
+    'react-dom': ReactDOM,
+    'react-loadable': Loadable
+  },
+  require (_module) {
+    if (this.modules[_module]) {
+      return this.modules[_module]
+    } else {
+      return {}
+    }
+  }
+}
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
