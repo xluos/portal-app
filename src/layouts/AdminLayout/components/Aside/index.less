@@ -1,0 +1,25 @@
+.admin-layout-aside {
+  transition: width 0.2s ease;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: 2px 0 8px 0 rgba(29,35,41,.05);
+  &.fixed {
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    left: 0;
+  }
+  .logo-box {
+    overflow: auto;
+    box-sizing: border-box;
+    background: #fff;
+    margin-bottom: 1px;
+    box-shadow: 1px 1px 0 0 #e8e8e8;
+  }
+  .admin-layout-aside__menu {
+    border-right: 1px solid transparent;
+  }
+  .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
+    border: none;
+  }
+}

@@ -1,35 +1,20 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState, useRef } from 'react';
 import { Redirect, Switch, Route } from 'react-router-dom';
-
+import { getLayoutRoute, getRedirectData, getRanderRouteData } from '../../utils'
 import NotFound from '../../components/NotFound';
-// import { asideMenuConfig } from '../../menuConfig';
 import routerData from '../../router/routerConfig';
 
 function MainRoutes () {
-  
-  /**
-   * 根据菜单取得重定向地址.
-   */
-  // getRedirectData = () => {
-  //   const redirectData = [];
-  //   const getRedirect = (item) => {
-  //     if (item && item.children) {
-  //       if (item.children[0] && item.children[0].path) {
-  //         redirectData.push({
-  //           from: `${item.path}`,
-  //           to: `${item.children[0].path}`,
-  //         });
-  //         item.children.forEach((children) => {
-  //           getRedirect(children);
-  //         });
-  //       }
-  //     }
-  //   };
+  const adminRoute = useRef([])
+  const redirectData = useRef([])
+  const randerRouteData = useRef([])
+  useEffect(() => {
+    adminRoute.current = getLayoutRoute(routerData, 'admin')
+    redirectData.current = getRedirectData(adminRoute.current)
+    randerRouteData.current = getRanderRouteData(adminRoute.current)
+    console.log(randerRouteData)
+  }, [])
 
-  //   asideMenuConfig.forEach(getRedirect);
-
-  //   return redirectData;
-  // };
   let [appRoute, setAppRoute] = useState(routerData)
   /**
    * 渲染路由组件
@@ -37,7 +22,7 @@ function MainRoutes () {
   const renderNormalRoute = (item, index) => {
     return item.component ? (
       <Route
-        key={index}
+        key={`route-${index}`}
         path={item.path}
         component={item.component}
         exact={item.exact}
@@ -52,12 +37,12 @@ function MainRoutes () {
   return (
     <Switch>
       {/* 渲染路由表 */}
-      {appRoute.map(renderNormalRoute)}
+      {randerRouteData.current.map(renderNormalRoute)}
 
       {/* 路由重定向，嵌套路由默认重定向到当前菜单的第一个路由 */}
-      {/* {redirectData.map((item, index) => {
+      {redirectData.current.map((item, index) => {
         return <Redirect key={index} exact from={item.from} to={item.to} />;
-      })} */}
+      })}
 
       {/* 首页默认重定向到 /dashboard */}
       {/* <Redirect exact from="/admin" to="/admin/dashboard/monitor" /> */}

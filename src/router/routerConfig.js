@@ -1,35 +1,102 @@
+import React from 'react'
+import { Icon } from 'antd'
 import { Component } from '../utils/loadable'
 // import A from '../pages/a'
+// 默认启用的请使用 disableXXX，默认禁用的请使用 enableXXX
+// layout 默认 admin 无模板为 base
 
-const routerConfig = [
+const route = [
   {
+    name: '菜单1',
     path: '/a',
-    component: Component(() => import(/* webpackChunkName: "a" */ '../pages/a'))
+    icon: 'play-circle',
+    children: [
+      {
+        name: '菜单1-1',
+        path: '/aa',
+        icon: 'pic-right',
+        children: [
+          {
+            name: '菜单1-1-1',
+            path: '/bb',
+            icon: 'fullscreen',
+            component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb')),
+          },
+          {
+            name: '菜单1-1-2',
+            path: '/ab',
+            icon: 'rollback',
+            layout: 'base',
+            component: Component(() => import(/* webpackChunkName: "ab" */ '../pages/ab')),
+          },
+        ]
+      },
+      {
+        name: '菜单1-2',
+        path: '/ab',
+        icon: 'rollback',
+        component: Component(() => import(/* webpackChunkName: "ab" */ '../pages/ab')),
+      },
+    ],
   },
   {
-    path: '/aa',
-    component: Component(() => import(/* webpackChunkName: "aa" */ '../pages/aa'))
-  },
-  {
-    path: '/ab',
-    component: Component(() => import(/* webpackChunkName: "ab" */ '../pages/ab'))
-  },
-  {
+    name: '菜单2',
     path: '/b',
-    component: Component(() => import(/* webpackChunkName: "b" */ '../pages/b'))
+    icon: 'rollback',
+    enableGroup: true,
+    children: [
+      {
+        groupTitle: 'item1',
+        items: [
+          {
+            name: '菜单2-1-1',
+            path: '/bb',
+            icon: 'rollback',
+            component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb')),
+          },
+          {
+            name: '菜单2-2-2',
+            path: '/bb',
+            layout: 'base',
+            component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb')),
+          },
+        ]
+      },
+      {
+        groupTitle: 'item2',
+        items: [
+          {
+            name: '菜单2-2',
+            path: '/c',
+            icon: 'up-square',
+            component: Component(() => import(/* webpackChunkName: "c" */ '../pages/c')),
+          },
+        ]
+      }
+      
+    ],
   },
   {
-    path: '/bb',
-    component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb'))
-  },
-  {
+    name: '菜单3',
     path: '/c',
-    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/c'))
+    icon: 'up-square',
+    exact: true,
+    disableAsideMenu: true,
+    disableHeaderMenu: true,
+    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/c')),
   },
   {
+    name: 'Setting',
     path: '/setting',
-    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/setting'))
+    icon: (<Icon type="setting" />),
+    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/setting')),
   },
-]
-
-export default routerConfig
+  {
+    name: 'Setting',
+    layout: 'base',
+    path: '/setting',
+    icon: (<Icon type="setting" />),
+    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/setting')),
+  },
+];
+export default route

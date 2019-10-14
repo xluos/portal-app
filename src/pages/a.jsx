@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function (props) {
-  return (<div>a</div>)
+  const [data] = useState({a: {b: '1'}})
+  return (<div onClick={() => {data.a.b++ }}>{data.a.b}</div>)
 }

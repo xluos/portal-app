@@ -1,45 +1,24 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, Icon } from 'antd';
-import { asideMenuConfig } from '../../../../router/menuConfig'
+import React from 'react'
+import Menu from './menu.jsx'
+import stores from '../../../../stores';
+import { MAX_WIDTH } from '../../../../stores/common';
+import './index.less'
 
-const { SubMenu } = Menu;
-
-export default function AsideMenu({collapsed}) {
-  let [menuData, setMenuData] = useState(asideMenuConfig)
-  useEffect(() => {
-    (window.app || (window.app = {})).pushMenu = (menu) => {
-      setMenuData([...menuData, menu])
-    }
-  })
+export default function Aside ({ logo }) { 
+  const { asideWidth, media } = stores.useStore('common')
+  const isMobile = media === 'isMobile'
   return (
-    <Menu
-      mode="inline"
-      inlineCollapsed={collapsed}>
-      {menuData.map((item, index) => {
-        if (item.children && item.children.length) {
-          return (
-            <SubMenu 
-              key={index}
-              title={
-                <>
-                  <Icon type="pie-chart" />
-                  <span>{item.name}</span>
-                </>
-              }>
-              {item.children.map((item2, j) => {
-                return (
-                  <Menu.Item key={index + '-' + j}><Link to={item2.path}><Icon type="pie-chart" />{item2.name}</Link></Menu.Item>
-                )
-              })}
-            </SubMenu>
-          )
-        } else {
-          return (
-            <Menu.Item key={index}><Link to={item.path}><Icon type="pie-chart" /><span>{item.name}</span></Link></Menu.Item>
-          )
-        }
-      })}
-    </Menu>
+    <nav 
+      className="admin-layout-aside fixed"
+      style={{
+        width: !isMobile ? asideWidth : MAX_WIDTH
+      }}>
+      <div 
+        className="logo-box"
+        style={isMobile ? {boxShadow: `0 1px 0 0 #e8e8e8`} : {}}>
+        { logo || <div className="logo"></div>}
+      </div>
+      <Menu className="admin-layout-aside__menu"></Menu>
+    </nav>
   )
 }

@@ -1,47 +1,39 @@
-import React, { useState } from 'react'
-import { Layout, Menu, Icon } from 'antd';
-import { useMedia } from '../../utils/hook'
+import React, { useState, useCallback } from 'react'
+import { Drawer } from 'antd';
+import stores from '../../stores';
 import MainRoutes from './MainRoutes'
-import AsideMenu from './components/Aside'
-import './index.css'
-const { Header, Sider, Content } = Layout;
+import Aside from './components/Aside'
+import Header from './components/Header'
+import Content from './components/Content'
+import Footer from './components/Footer'
+import './index.less'
 
 export default function AdminLayout() {
-  let MEDIA = useMedia()
-  let [collapsed, setCollapsed] = useState(MEDIA !== 'isDesktop')
-  const toggle = function () {
-    setCollapsed(!collapsed)
-  }
+  const { asideWidth, media, collapsed, toggleCollapsed } = stores.useStore('common')
+  // eslint-disable-next-line
+  const onClose = useCallback(() => toggleCollapsed(true), [])
   return (
-    <Layout>
-      <Sider 
-        collapsible 
-        theme="light"
-        trigger={null}
-        collapsed={collapsed} 
-        collapsedWidth={80}>
-        <div className="logo" />
-        <AsideMenu collapsed={collapsed} />
-      </Sider>
-      <Layout>
-        <Header style={{ background: '#fff', padding: 0 }}>
-          <Icon
-            className="trigger"
-            type={collapsed ? 'menu-unfold' : 'menu-fold'}
-            onClick={toggle}
-          />
-        </Header>
-        <Content
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            background: '#fff',
-            minHeight: 280,
-          }}
+    <div>
+      {media === 'isMobile' ? (
+        <Drawer
+          placement="left"
+          closable={false}
+          onClose={onClose}
+          visible={!collapsed}
         >
+          <Aside />
+        </Drawer>) : (<Aside />)}
+      <section 
+        className="admin-layout-main" 
+        style={{
+          paddingLeft: media === 'isMobile' ? 0 : asideWidth
+        }}>
+        <Header />
+        <Content>
           <MainRoutes/>
         </Content>
-      </Layout>
-    </Layout>
+        <Footer />
+      </section>
+    </div>
   )
 }
