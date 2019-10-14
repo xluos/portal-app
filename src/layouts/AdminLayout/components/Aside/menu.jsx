@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Menu, Icon } from 'antd';
 import routerData from '../../../../router/routerConfig'
 import stores from '../../../../stores';
 import { getAsideMenu, getLayoutRoute } from '../../../../utils'
 const { SubMenu, ItemGroup } = Menu;
+const pathKeyMap = {}
 
 function randerMenuTitle (menuData) {
   return (
@@ -16,9 +17,11 @@ function randerMenuTitle (menuData) {
 }
 
 function randerMenuItem (menuData, index, tier = 0) {
+  console.log('randerMenuItem')
+  pathKeyMap[pathKeyMap[`menu-item-${tier}-${index}`] = menuData.path] = `menu-item-${tier}-${index}`
   return (
-    <Menu.Item key={`menu-item-${tier}-${index}`}>
-      <Link to={menuData.path}>
+    <Menu.Item key={`path:${menuData.path}`}>
+      <Link to={menuData.path} target={menuData.linkTarget || ""}>
         {randerMenuTitle(menuData)}
       </Link>
     </Menu.Item>
@@ -53,9 +56,11 @@ function randerMenu (menuData, index, tier = 0) {
 }
 
 
-export default function AsideMenu () {
+function AsideMenu ({location: {pathname}}) {
   const menuData = useRef([])
   const { collapsed } = stores.useStore('common')
+  const [seleKeys, setSeleKeys] = useState(`path:${pathname}`)
+  console.log('AsideMenu')
   useEffect(() => {
     menuData.current = getAsideMenu(getLayoutRoute(routerData))
     // (window.app || (window.app = {})).pushMenu = (menu) => {
@@ -63,11 +68,18 @@ export default function AsideMenu () {
     // }
     console.log('menuData', menuData)
   }, [])
+
+  
   return (
     <Menu
       mode="inline"
+      forceSubMenuRender={true}
+      defaultSelectedKeys={[seleKeys]}
+      // defaultOpenKeys={['submenu-0-0','submenu-1-0_0']}
       inlineCollapsed={collapsed}>
       {menuData.current.map((_, i) => randerMenu(_, i, 0))}
     </Menu>
   )
 }
+
+export default withRouter(AsideMenu)

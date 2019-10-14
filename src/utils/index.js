@@ -49,7 +49,6 @@ function filterRouteData (routerData, filterfunc, params) {
  */
 export function getLayoutRoute (routerData, layout = 'admin') {
   return filterRouteData(routerData, (current, params) => {
-    console.log(current, params, (current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')))
     return current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')
   }, {layout})
 }
@@ -138,7 +137,6 @@ export function getAsideMenu (routerData, type = 'aside') {
   return filterRouteData(routerData, (current, params) => {
     // console.log(current, params)
     if (params.type === 'aside') {
-      console.log(current, !current.disableAsideMenu)
       return !current.value.disableAsideMenu
     } else if (params.type === 'head') {
       return !current.value.disableHeaderMenu

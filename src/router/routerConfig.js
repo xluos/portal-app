@@ -20,6 +20,7 @@ const route = [
             name: '菜单1-1-1',
             path: '/bb',
             icon: 'fullscreen',
+            linkTarget: '_blank',
             component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb')),
           },
           {
@@ -43,7 +44,6 @@ const route = [
     name: '菜单2',
     path: '/b',
     icon: 'rollback',
-    enableGroup: true,
     children: [
       {
         groupTitle: 'item1',
@@ -93,10 +93,17 @@ const route = [
   },
   {
     name: 'Setting',
-    layout: 'base',
-    path: '/setting',
+    layout: 'basic',
+    path: '/base/setting',
     icon: (<Icon type="setting" />),
     component: Component(() => import(/* webpackChunkName: "c" */ '../pages/setting')),
+  },
+  {
+    name: 'demo',
+    layout: 'basic',
+    path: '/base/demo',
+    icon: (<Icon type="setting" />),
+    component: Component(() => import(/* webpackChunkName: "c" */ '../pages/menu.demo')),
   },
 ];
 export default route
