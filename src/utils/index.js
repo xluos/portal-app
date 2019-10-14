@@ -7,13 +7,13 @@
  * @param {*} params 剩余参数
  * @returns
  */
-function filterRouteData (routerData, filterfunc, ...params) {
+function filterRouteData (routerData, filterfunc, params) {
   // 判断是否是分组的子菜单，单独处理
   if (routerData[0] && routerData[0].items) {
     return routerData.map(item => {
       return {
         ...item,
-        items: filterRouteData(item.items, filterfunc, ...params)
+        items: filterRouteData(item.items, filterfunc, params)
       }
     })
   }
@@ -28,7 +28,7 @@ function filterRouteData (routerData, filterfunc, ...params) {
       if (currentValue.children) {
         accumulator.push({
           ...currentValue,
-          children: filterRouteData(currentValue.children, filterfunc, ...params)
+          children: filterRouteData(currentValue.children, filterfunc, params)
         })
       } else {
         accumulator.push(currentValue)
@@ -49,8 +49,9 @@ function filterRouteData (routerData, filterfunc, ...params) {
  */
 export function getLayoutRoute (routerData, layout = 'admin') {
   return filterRouteData(routerData, (current, params) => {
+    console.log(current, params, (current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')))
     return current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')
-  }, layout)
+  }, {layout})
 }
 
 
@@ -135,11 +136,13 @@ export function getRanderRouteData (routerData) {
 
 export function getAsideMenu (routerData, type = 'aside') {
   return filterRouteData(routerData, (current, params) => {
+    // console.log(current, params)
     if (params.type === 'aside') {
-      return !current.disableAsideMenu
+      console.log(current, !current.disableAsideMenu)
+      return !current.value.disableAsideMenu
     } else if (params.type === 'head') {
-      return !current.disableHeaderMenu
+      return !current.value.disableHeaderMenu
     }
     return true
-  }, type)
+  }, {type})
 }

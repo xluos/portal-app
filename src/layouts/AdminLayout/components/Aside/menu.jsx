@@ -29,13 +29,14 @@ function randerSubMenu (menuData, index, tier = 0) {
   if (menuData.items) {
     return (
       <ItemGroup key={`group-${tier}-${index}`} title={menuData.groupTitle}>
-        {menuData.items.map((v, i) => randerMenu(v, i, tier + 1))}
+        {menuData.items.map((v, i) => randerMenu(v, `${index}_${i}`, tier + 1))}
       </ItemGroup>
     )
   } else if (menuData.children) {
-    return menuData.children.map((v, i) => randerMenu(v, i, tier + 1))
+    // return menuData.children.map((v, i) => randerMenu(v, i, tier + 1))
+    return randerMenu(menuData, index, tier + 1)
   }
-  return randerMenuItem(menuData)
+  return randerMenuItem(menuData, index, tier + 1)
 }
 
 
@@ -43,7 +44,7 @@ function randerMenu (menuData, index, tier = 0) {
   if (menuData.children && menuData.children.length) {
     return (
       <SubMenu key={`submenu-${tier}-${index}`} title={randerMenuTitle(menuData)}>
-        {menuData.children.map(randerSubMenu)}
+        {menuData.children.map((_, i) => randerSubMenu(_, `${index}_${i}`, tier))}
       </SubMenu>
     )
   } else {
@@ -61,13 +62,12 @@ export default function AsideMenu () {
     //   setMenuData([...menuData, menu])
     // }
     console.log('menuData', menuData)
-    console.log(menuData.current.map(randerMenu).join('\n'))
   }, [])
   return (
     <Menu
       mode="inline"
       inlineCollapsed={collapsed}>
-      {menuData.current.map(randerMenu)}
+      {menuData.current.map((_, i) => randerMenu(_, i, 0))}
     </Menu>
   )
 }
