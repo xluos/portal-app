@@ -18,7 +18,7 @@ const route = [
         children: [
           {
             name: '菜单1-1-1',
-            path: '/bb',
+            path: '/bbc',
             icon: 'fullscreen',
             linkTarget: '_blank',
             component: Component(() => import(/* webpackChunkName: "bb" */ '../pages/bb')),
@@ -78,7 +78,7 @@ const route = [
   },
   {
     name: '菜单3',
-    path: '/c',
+    path: '/cc',
     icon: 'up-square',
     exact: true,
     disableAsideMenu: true,

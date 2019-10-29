@@ -4,6 +4,7 @@ import stores from '../../../../stores';
 import './index.less'
 export default function Header () {
   const { toggleCollapsed, collapsed } = stores.useStore('common')
+  // eslint-disable-next-line
   const toggle = useCallback(() => { console.log('usecb'); toggleCollapsed() }, [])
   return (
     <header className="admin-layout-header">

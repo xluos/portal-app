@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 // import { Menu, Icon } from 'antd';
 import Menu from '../layouts/AdminLayout/components/Aside/menu'
 // const { SubMenu } = Menu;

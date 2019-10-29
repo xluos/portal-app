@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Redirect, Switch, Route } from 'react-router-dom';
 import { getLayoutRoute, getRedirectData, getRanderRouteData } from '../../utils'
 import NotFound from '../../components/NotFound';

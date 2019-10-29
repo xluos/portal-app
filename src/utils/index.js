@@ -1,3 +1,4 @@
+import md5 from 'md5'
 
 /**
  * 通用过滤router函数
@@ -5,37 +6,72 @@
  * @param {*} routerData 原始数据
  * @param {*} filterfunc 判断是否过滤的函数
  * @param {*} params 剩余参数
+ * @param {*} filterData 重写需要过滤的数据的
+ * @param {*} parent 不同层级递归向下传递的数据
  * @returns
  */
-function filterRouteData (routerData, filterfunc, params) {
-  // 判断是否是分组的子菜单，单独处理
-  if (routerData[0] && routerData[0].items) {
-    return routerData.map(item => {
-      return {
-        ...item,
-        items: filterRouteData(item.items, filterfunc, params)
-      }
-    })
+function filterRouteData ({routerData, filterfunc, params, filterData, isHashMap = false}) {
+  let routeHashMap = {}
+  function pushValue(value, filterData, parentData) {
+    if (typeof filterData === 'function') {
+      return this.push(filterData(value, parentData))
+    }
+    return this.push(value)
   }
-  // 正常处理其他的
-  return routerData.reduce((accumulator, currentValue, currentIndex, array) => {
-    let current = {
-      value: currentValue,
-      index: currentIndex,
-      array: array
+  function filterRoute ({routerData, filterfunc, params, filterData , parentData = [], isHashMap = false}) {
+    // console.log('parentData', parentData)
+    // 判断是否是分组的子菜单，单独处理
+    if (routerData[0] && routerData[0].items) {
+      return routerData.map(item => {
+        return {
+          ...item,
+          key: md5(item.groupTitle + Math.random()),
+          items: filterRoute({routerData: item.items, filterfunc, params, parentData, isHashMap})
+        }
+      })
     }
-    if (filterfunc(current, params)) {
-      if (currentValue.children) {
-        accumulator.push({
-          ...currentValue,
-          children: filterRouteData(currentValue.children, filterfunc, params)
-        })
-      } else {
-        accumulator.push(currentValue)
+    // 正常处理其他的
+    return routerData.reduce((accumulator, currentValue, currentIndex, array) => {
+      if (!currentValue.key) {
+        currentValue.key = currentValue.name + '--' + md5(currentValue.name + currentValue.path)
       }
+      if (isHashMap) {
+        // console.log('currentValue.path', currentValue.path, 'parentData', parentData)
+        if (routeHashMap[currentValue.path]) {
+          console.warn(`path: ${currentValue.path} 重复`)
+        }
+        routeHashMap[currentValue.path] = {
+          menu: parentData,
+          key: currentValue.key
+        }
+      }
+      let current = {
+        value: currentValue,
+        index: currentIndex,
+        array: array
+      }
+      if (filterfunc(current, params)) {
+        if (currentValue.children) {
+          pushValue.call(accumulator, {
+            ...currentValue,
+            children: filterRoute({routerData: currentValue.children, params, filterfunc, parentData: [...parentData, currentValue.key], isHashMap})
+          }, filterData, parentData)
+        } else {
+          pushValue.call(accumulator, currentValue, filterData, parentData)
+        }
+      }
+      return accumulator
+    }, [])
+  }
+  const data = filterRoute({routerData, filterfunc, params, filterData , isHashMap})
+
+  if (isHashMap) {
+    return {
+      data,
+      hashMap: routeHashMap
     }
-    return accumulator
-  }, [])
+  }
+  return data
 }
 
 
@@ -48,9 +84,13 @@ function filterRouteData (routerData, filterfunc, params) {
  * @returns 过滤布局后的路由数据
  */
 export function getLayoutRoute (routerData, layout = 'admin') {
-  return filterRouteData(routerData, (current, params) => {
-    return current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')
-  }, {layout})
+  return filterRouteData({
+    routerData, 
+    filterfunc: (current, params) => {
+      return current.value.layout === params.layout || (!current.value.layout && params.layout === 'admin')
+    }, 
+    params: {layout}
+  })
 }
 
 
@@ -133,14 +173,33 @@ export function getRanderRouteData (routerData) {
   return randerRouteData;
 }
 
+/**
+ * 获取菜单数据
+ *
+ * @export
+ * @param {*} routerData
+ * @param {string} [type='aside']
+ * @returns
+ */
 export function getAsideMenu (routerData, type = 'aside') {
-  return filterRouteData(routerData, (current, params) => {
-    // console.log(current, params)
-    if (params.type === 'aside') {
-      return !current.value.disableAsideMenu
-    } else if (params.type === 'head') {
-      return !current.value.disableHeaderMenu
-    }
-    return true
-  }, {type})
+  // debugger
+  // eslint-disable-next-line
+  let menuRoute = filterRouteData({
+    routerData, 
+    filterfunc: (current, params) => {
+      // console.log(current, params)
+      if (params.type === 'aside') {
+        return !current.value.disableAsideMenu
+      } else if (params.type === 'head') {
+        return !current.value.disableHeaderMenu
+      }
+      return true
+    },
+    filterData: (value, parent) => {
+      return value
+    },
+    isHashMap: true,
+    params: {type}
+  })
+  return menuRoute
 }
