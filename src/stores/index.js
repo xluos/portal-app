@@ -2,7 +2,6 @@
 import common from './common';
 import Store from '@ice/store';
 import logger from '@ice/store-logger';
-
 const storeManager = new Store();
 const middlewares = [];
 
@@ -16,3 +15,4 @@ storeManager.applyMiddleware(middlewares);
 storeManager.registerStore('common', common);
 
 export default storeManager;
+export * from './Context'

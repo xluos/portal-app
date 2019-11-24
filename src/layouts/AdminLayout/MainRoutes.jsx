@@ -1,21 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Redirect, Switch, Route } from 'react-router-dom';
 import { getLayoutRoute, getRedirectData, getRanderRouteData } from '../../utils'
 import NotFound from '../../components/NotFound';
 import routerData from '../../router/routerConfig';
+import { useSubAppConfigContext } from '../../stores'
 
 function MainRoutes () {
   const adminRoute = useRef([])
   const redirectData = useRef([])
   const randerRouteData = useRef([])
+  const subAppConfig = useSubAppConfigContext()
+
   useEffect(() => {
-    adminRoute.current = getLayoutRoute(routerData, 'admin')
+    console.log([...routerData, ...subAppConfig.routes])
+    adminRoute.current = getLayoutRoute([...routerData, ...subAppConfig.routes], 'admin')
     redirectData.current = getRedirectData(adminRoute.current)
     randerRouteData.current = getRanderRouteData(adminRoute.current)
     console.log(randerRouteData)
-  }, [])
+  }, [subAppConfig])
 
-  let [appRoute, setAppRoute] = useState(routerData)
   /**
    * 渲染路由组件
    */
@@ -29,11 +32,7 @@ function MainRoutes () {
       />
     ) : null;
   };
-  useEffect (() => {
-    (window.app || (window.app = {})).pushRoute = (route) => {
-      setAppRoute([...appRoute, route])
-    }
-  })
+  
   return (
     <Switch>
       {/* 渲染路由表 */}

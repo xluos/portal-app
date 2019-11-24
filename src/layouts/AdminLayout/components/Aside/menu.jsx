@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, Icon } from 'antd';
 import routerData from '../../../../router/routerConfig'
-import stores from '../../../../stores';
+import stores, { useSubAppConfigContext } from '../../../../stores';
 import { getAsideMenu, getLayoutRoute } from '../../../../utils'
 const { SubMenu, ItemGroup } = Menu;
 
@@ -33,7 +33,6 @@ function randerSubMenu (menuData, index, tier = 0) {
       </ItemGroup>
     )
   } else if (menuData.children) {
-    // return menuData.children.map((v, i) => randerMenu(v, i, tier + 1))
     return randerMenu(menuData, index, tier + 1)
   }
   return randerMenuItem(menuData, index, tier + 1)
@@ -57,12 +56,13 @@ function AsideMenu () {
   const menuData = useRef([])
   const routeKeyHashMap = useRef({})
   const location = useLocation()
+  const subAppConfig = useSubAppConfigContext()
   let path = location.pathname
-  let getAsideMenuData = getAsideMenu(getLayoutRoute(routerData))
+  let getAsideMenuData = getAsideMenu(getLayoutRoute([...routerData, ...subAppConfig.routes]))
   menuData.current = getAsideMenuData.data
   routeKeyHashMap.current = getAsideMenuData.hashMap
-  let selectedKeys = [routeKeyHashMap.current[path].key]
-  let openKeys = routeKeyHashMap.current[path].menu
+  let selectedKeys = routeKeyHashMap.current[path] ? [routeKeyHashMap.current[path].key] : []
+  let openKeys = routeKeyHashMap.current[path] ? routeKeyHashMap.current[path].menu : []
   const { collapsed } = stores.useStore('common')
   return (
     <Menu
